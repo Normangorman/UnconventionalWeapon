@@ -1,5 +1,5 @@
 Vector2 = {}
-Vector2.__index = Position
+Vector2.__index = Vector2
 
 function Vector2.new(x, y)
   local self = {}
