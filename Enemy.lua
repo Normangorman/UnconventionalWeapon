@@ -25,3 +25,8 @@ end
 function Enemy:update(dt)
     self.position = self.position + self.velocity
 end
+
+function Enemy:attack()
+    local playerPos = Player.position
+    local angle = self.position:angleTo(playerPos)
+end

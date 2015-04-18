@@ -16,6 +16,14 @@ function Player.new()
     return self
 end
 
+function Player:setPos(v)
+    self.position = v
+end
+
+function Player:setVel(v)
+    self.velocity = v
+end
+
 function Player:draw()
     love.graphics.setColor( unpack(self.color) )
     love.graphics.rectangle("fill", self.position.x, self.position.y, self.width, self.height)
