@@ -1,42 +1,37 @@
-require "Vector2"
 require "Beam"
 
 Player = {}
 Player.__index = Player
-
+Player.setPos = Object.setPos
+Player.setVel = Object.setVel
+Player.move = Object.move
 function Player.new()
   local self = {}
   setmetatable(self, Player)
 
-  self.position = Vector2.new(0,0)
-  self.velocity = Vector2.new(0,0)
+  self:setPos(V(0,0))
+  self:setVel(V(0,0))
   self.color = {255,255,255}
-  self.width = 30
-  self.height = 30
+  self.dims = V(50, 50)
 
   return self
 end
 
-function Player:setPos(v)
-  self.position = v
-end
 
-function Player:setVel(v)
-  self.velocity = v
-end
+
 
 function Player:draw()
   love.graphics.setColor( unpack(self.color) )
-  love.graphics.rectangle("fill", self.position.x, self.position.y, self.width, self.height)
+  love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.dims.x, self.dims.y)
   love.graphics.setColor(255,255,255)
 end
 
 function Player:update(dt)
-  self.position = self.position + self.velocity
+  self:move(dt)
 end
 
 function Player:mousepressed(mx, my, button)
-  local mouseVector = Vector2.new(mx, my)
-  local angle = self.position:angleTo(mouseVector) 
+  local mouseVector = V(mx, my)
+  local angle = self.pos:angleTo(mouseVector) 
   local beam = Beam.new(self.position, angle)
 end

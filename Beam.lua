@@ -5,55 +5,79 @@ Beam.__index = Beam
 Beam.setPos = Object.setPos
 Beam.setVel = Object.setVel
 
-function Beam.new(position, velocity)
-  self = {}
-  setmetatable(self, Beam)
 
-  self.latestPoint = position
-  local basePoint = Vector2.new(position.x, position.y)
-  self.points = {basePoint, self.latestPoint}
-  self.velocity = velocity or Vector2.new(0,0) 
-  self.color = {125,125,0}
- 
-  return self
-end
 
 function Beam:update(dt)
   self:move(dt)
+
+  local points = Object.copy(self.points)
+  table.insert(points, self.pos)
+  local index = #points
+  local distance = self.length
+  while true do
+    distance = distance - math.abs(points[index]:dist(points[index - 1]))
+    index = index - 1
+    if distance < 0 then
+      break
+    elseif index == 1 then
+      index = 0 -- don't do the next for loop
+      break
+    end
+  end
+  
+  --        B********C    Since A is out of range, 
+  --       *              we want to calculate a to replace it
+  --      *
+  --     *
+  --   [a]
+  --   -
+  --  A
+  --
+  -- Reminder: B -> A is calculated by (A - B)
+  
+  for i = 1, index do
+    local A = table.remove(self.points, 1)
+    if i == 1 then
+      local B = self.points[1]
+      olddistance = A:dist(B)
+      newdistance = math.abs(A:dist(B)) + distance -- add the negative distance
+      -- to get a shorter distance. We're going to work out the end point on that shorter distance
+      a = (A - B) * (newdistance / olddistance) + B
+      table.insert(self.points, 1, a)
+    end
+  end
 end
 
 Beam.setPos = Object.setPos
 Beam.setVel = Object.setVel
 Beam.move = Object.move
 
-function Beam:draw()
-  love.graphics.setColor( unpack(self.color) )
-  for i = 1, #self.points do
-    love.graphics.line(self.points[i]:xy(), self.points[i+1]:xy())
-  end
-  love.graphics.setColor(255,255,255)
+function Beam:setLength(length)
+  self.length = length
 end
 
-function Beam:move(dt)
-  local magnitude = self.velocity:magnitude()
-  local angle = self.velocity:getAngle()
-
-  local delta = Vector2.new(math.cos(angle) * magnitude, math.sin(angle) * magnitude)
-
-  self.latestPoint = self.latestPoint + delta 
+function Beam:draw()
+  love.graphics.setColor(100, 150, 100)
+  local points = Object.copy(self.points)
+  table.insert(points, self.pos)
+  for i = 1, (#points - 1) do
+    print(#points .. " " .. type(points[i + 1]))
+    love.graphics.line(points[i].x, points[i].y, points[i+1].x, points[i+1].y)
+  end
+  love.graphics.setColor(255,255,255)
 end
 
 function Beam.new()
   self = {}
   setmetatable(self, Beam)
   self.points = {}
-  self:setPos(Vector2.new(50, 50))
-  self:setVel(Vector2.new(0, 0))
- 
+  self:setPos(V(50, 50))
+  self:setVel(V(0, 0))
+  self:bounce(V(0, 0))
+  self:setLength(100)
   return self
 end
 
 function Beam:bounce(pos)
-  Vector2.assert(pos)
-  self.points.insert(pos)
+  table.insert(self.points, pos)
 end
