@@ -25,4 +25,9 @@ function Vector2:angleTo(other) -- in radians
     return math.atan2(deltaY, deltaX)
 end
 
+function Vector2:xy()
+  return self.x, self.y
+end
+
 Vector2.__add = Vector2.add
+
