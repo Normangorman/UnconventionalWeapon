@@ -19,6 +19,10 @@ function Vector2:magnitude()
   return math.sqrt( math.pow(math.abs(self.x), 2) + math.pow(math.abs(self.y), 2) )
 end
 
+function Vector2:getAngle()
+  return math.atan( math.abs(self.y) / math.abs(self.x) )
+end
+
 function Vector2:angleTo(other) -- in radians
   local deltaY = other.y - self.y
   local deltaX = other.x - self.x

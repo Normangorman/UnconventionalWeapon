@@ -5,14 +5,14 @@ Beam.__index = Beam
 Beam.setPos = Object.setPos
 Beam.setVel = Object.setVel
 
-function Beam.new(position, angle)
+function Beam.new(position, velocity)
   self = {}
   setmetatable(self, Beam)
 
   self.latestPoint = position
   local basePoint = Vector2.new(position.x, position.y)
   self.points = {basePoint, self.latestPoint}
-  self.angle = angle or 0
+  self.velocity = veelocity or Vector2(0,0) 
   self.color = {125,125,0}
  
   return self
@@ -32,7 +32,9 @@ end
 
 function Beam:move(dt)
   local magnitude = self.velocity:magnitude()
-  local delta = Vector2.new(math.cos(self.angle) * magnitude, math.sin(self.angle) * magnitude)
+  local angle = self.velocity:getAngle()
+
+  local delta = Vector2.new(math.cos(angle) * magnitude, math.sin(angle) * magnitude)
 
   self.latestPoint = self.latestPoint + delta 
 end
