@@ -1,6 +1,5 @@
 Vector2 = {}
 Vector2.__index = Position
-Vector2.__add = Vector2.add
 
 function Vector2.new(x, y)
     local self = {}
@@ -20,6 +19,10 @@ function Vector2:magnitude()
     return math.sqrt( math.pow(math.abs(self.x), 2) + math.pow(math.abs(self.y), 2) )
 end
 
+
 function Vector2:xy()
   return self.x, self.y
 end
+
+Vector2.__add = Vector2.add
+
