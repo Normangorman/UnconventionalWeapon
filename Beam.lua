@@ -102,4 +102,5 @@ function Beam:bounce()
 end
 
 function Beam:collisionStart(other, dt, mtv_x, mtv_y)
+  
 end
