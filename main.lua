@@ -1,3 +1,5 @@
+require "Object"
+require "Vector"
 require "Player"
 
 local player

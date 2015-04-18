@@ -19,3 +19,7 @@ end
 function Vector2:magnitude()
     return math.sqrt( math.pow(math.abs(self.x), 2) + math.pow(math.abs(self.y), 2) )
 end
+
+function Vector2:xy()
+  return self.x, self.y
+end
