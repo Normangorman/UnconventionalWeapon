@@ -13,27 +13,28 @@ local player
 --GAME_MANAGER = GameManager.new()
 
 function love.load()
-  --player = Player.new(): setPos(V(50, 50)):setVel(V(5, 5))
-  beam = Beam.new():setPos(V(50, 50)):setVel(V(1, 10))
+  player = Player.new(): setPos(V(50, 50)):setVel(V(5, 5))
+  beam = Beam.new():setPos(V(50, 50)):setVel(V(20, 10))
   print(beam.pos)
   beam:bounce(beam.pos)
 end
 
-timer = 7
+timer = 2
 function love.update(dt)
+  print(dt)
   timer = timer - dt
   if timer < 0 then
     beam:bounce(beam.pos)
-    beam:setVel(V(1, 1))
+    beam:setVel(V(50, 60))
   end
   
- -- player:update(dt) 
+ player:update(dt) 
   beam:update(dt)
   --GAME_MANAGER.update(dt)
 end
 
 function love.draw()
-  --player:draw()
+  player:draw()
   beam:draw()
  -- GAME_MANAGER.draw()
 end

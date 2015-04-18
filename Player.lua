@@ -33,5 +33,5 @@ end
 function Player:mousepressed(mx, my, button)
   local mouseVector = V(mx, my)
   local angle = self.pos:angleTo(mouseVector) 
-  local beam = Beam.new(self.position, angle)
+  --local beam = Beam.new(self.position, angle)
 end
