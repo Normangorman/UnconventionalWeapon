@@ -1,18 +1,29 @@
-require "Object"
-require "Vector2"
+require "asserts"
+V = require "lib.hump.vector"
 require "Player"
+require "Beam"
+require "Enemy"
 require "GameManager"
 
-local player
+-- Work with the zerobrane debugger
+if arg[#arg] == "-debug" then require("mobdebug").start() end
 
-GAME_MANAGER = GameManager.new()
+local player
+local beam
+local enemy
+
+GAME_MANAGER = GameManager.new(HC)
 
 function love.load()
-  player = Player.new()    
-  player.position.x = 300
-  player.position.y = 300
+  player = Player.new( V(300,300) )
+  beam = Beam.new(V(100,100)):setVel(V(100, 200))
+  enemy = Enemy.new(V(200,200)):setVel(V(-5, 5))
 
+  GAME_MANAGER:addEntity(beam)
   GAME_MANAGER:addEntity(player)
+  GAME_MANAGER:addEntity(enemy)
+
+  print("love.load: initial beam.pos is " .. tostring(beam.pos))
 end
 
 function love.update(dt)
@@ -24,5 +35,21 @@ function love.draw()
 end
 
 function love.mousepressed(mx, my, button)
-  player:mousepressed(mx, my, button)
+  --player:mousepressed(mx, my, button)
+  beam:bounce()
+  print( string.format("love.mousepressed - mx = %d, my = %d", mx, my) )
+  local newVel = (V(mx, my) - beam.headPos) 
+  beam.vel = newVel
+end
+
+function love.keypressed(key)
+    if key == "up" then
+        player.pos.y = player.pos.y - 10
+    elseif key == "right" then
+        player.pos.x = player.pos.x + 10 
+    elseif key == "down" then
+        player.pos.y = player.pos.y + 10 
+    elseif key == "left" then
+        player.pos.x = player.pos.x - 10 
+    end
 end

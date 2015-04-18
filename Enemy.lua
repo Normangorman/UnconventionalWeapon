@@ -1,16 +1,19 @@
-require "Vector2"
+require "GameObject"
 
 Enemy = {}
+setmetatable(Enemy, GameObject)
 Enemy.__index = Enemy
 
-function Enemy.new()
-  local self = {}
+function Enemy.new(pos)
+  local self = GameObject.new(pos)
   setmetatable(self, Enemy)
 
-  self.position = Vector2.new(0, 0)
-  self.velocity = Vector2.new(0, 0)
-  self.width = 25
-  self.height = 25
+  self.tag = "Enemy"
+  self.physicsShapeType = "Rectangle"
+  self.width = 30
+  self.height = 30
+
+  self.dims = V(25, 25)
   self.color = {255,255,0}
 
   return self
@@ -18,15 +21,14 @@ end
 
 function Enemy:draw()
   love.graphics.setColor( unpack(self.color) )
-  love.graphics.rectangle("fill", self.position.x, self.position.y, self.width, self.height)
+  love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.width, self.height)
   love.graphics.setColor(255,255,255)
 end
 
 function Enemy:update(dt)
-  self.position = self.position + self.velocity
+    self:move(dt)
 end
 
 function Enemy:attack(player)
-  local playerPos = player.position
-  local angle = self.position:angleTo(playerPos)
+  local angle = self.pos:angleTo(player.pos)
 end
