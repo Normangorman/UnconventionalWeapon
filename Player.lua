@@ -1,4 +1,5 @@
 require "Vector2"
+require "Beam"
 
 Player = {}
 Player.__index = Player
@@ -34,7 +35,7 @@ function Player:update(dt)
   self.position = self.position + self.velocity
 end
 
-function Player:mousepressed(button, mx, my)
+function Player:mousepressed(mx, my, button)
   local mouseVector = Vector2.new(mx, my)
   local angle = self.position:angleTo(mouseVector) 
   local beam = Beam.new(self.position, angle)

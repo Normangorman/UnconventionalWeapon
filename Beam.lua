@@ -12,7 +12,7 @@ function Beam.new(position, velocity)
   self.latestPoint = position
   local basePoint = Vector2.new(position.x, position.y)
   self.points = {basePoint, self.latestPoint}
-  self.velocity = veelocity or Vector2(0,0) 
+  self.velocity = velocity or Vector2.new(0,0) 
   self.color = {125,125,0}
  
   return self
