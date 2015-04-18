@@ -17,3 +17,6 @@ Most functionality should be used directly from Object, like so:
 
 Player.draw = Object.draw
 
+
+Tab size: 2 spaces
+Use vel and pos, not velocity and position.

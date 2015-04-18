@@ -31,12 +31,7 @@ function Beam:draw()
 end
 
 function Beam:move(dt)
-  local magnitude = self.velocity:magnitude()
-  local angle = self.velocity:getAngle()
-
-  local delta = Vector2.new(math.cos(angle) * magnitude, math.sin(angle) * magnitude)
-
-  self.latestPoint = self.latestPoint + delta 
+  self.latestPoint = self.latestPoint + self.velocity
 end
 
 function Beam:setAngle(angle)

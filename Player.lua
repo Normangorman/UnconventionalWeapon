@@ -39,4 +39,6 @@ function Player:mousepressed(mx, my, button)
   local mouseVector = Vector2.new(mx, my)
   local angle = self.position:angleTo(mouseVector) 
   local beam = Beam.new(self.position, angle)
+
+  GAME_MANAGER:addEntity(beam)
 end

@@ -16,11 +16,11 @@ function love.load()
 end
 
 function love.update(dt)
-  GAME_MANAGER.update(dt)
+  GAME_MANAGER:update(dt)
 end
 
 function love.draw()
-  GAME_MANAGER.draw()
+  GAME_MANAGER:draw()
 end
 
 function love.mousepressed(mx, my, button)
