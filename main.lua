@@ -30,3 +30,8 @@ function love.draw()
     player:draw()
     beam:draw()
 end
+
+
+function love.mousepressed(button, mx, my)
+  player:mousepressed(button, mx, my)
+end
