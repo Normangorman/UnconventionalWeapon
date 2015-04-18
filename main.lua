@@ -4,14 +4,10 @@ local player
 
 function love.load()
     player = Player.new()    
-    player.x = 300
-    player.y = 300
-    player.vx = 5
-    player.vy = 5
-
-    for k, v in pairs(player) do
-        print(k,v)
-    end
+    player.position.x = 300
+    player.position.y = 300
+    player.velocity.x = 5
+    player.velocity.y = 5
 end
 
 function love.update(dt)
