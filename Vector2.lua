@@ -29,5 +29,9 @@ function Vector2:xy()
   return self.x, self.y
 end
 
+function Vector2.assert(v)
+  assertint(v.x, v.y)
+end
+
 Vector2.__add = Vector2.add
 
