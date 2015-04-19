@@ -13,6 +13,8 @@ function Beam.new(initialPos)
   self.physicsShapeType = "Point"
 
   self.points = Utils.stack()
+  self.numBounces = 0 
+  self.maxBounces = 10 -- it will die after this many bounces
 
   self.headPos = Utils.copy(initialPos)
   self.tailPos = Utils.copy(initialPos)
@@ -89,54 +91,93 @@ function Beam:getLength()
 end
 
 function Beam:bounce()
+  self.numBounces = self.numBounces + 1
+
+  if self.numBounces == self.maxBounces then
+      self:die()
+  end
   table.insert(self.points, self.headPos)
   local newPos = Utils.copy(self.headPos)
   self.headPos = newPos
 end
 
+function Beam:die()
+    print("Beam died.")
+    self.dead = true
+end
+
 function Beam:collisionStart(other, dt, mtv_x, mtv_y)
   print(string.format("Beam:collisionStart called with mtv_x=%f, mtv_y = %f", mtv_x, mtv_y))
   if other.physicsShapeType == "Rectangle" then
-    local delta = self.pos - other.pos
-
     print("Other object is a Rectangle")
-    print(string.format("delta.x = %f, delta.y = %f", delta.x, delta.y))
-    local side = ""
-    if delta.y <= 0 then -- the beam is above the center of the rect
-        if math.abs(delta.y) >= math.abs(delta.x) then
-          side = "top"
 
-        elseif delta.x >= 0 then
-          side = "right"
-        else
-          side = "left"
-        end
-    else -- the beam is below the center of the rect
-        if math.abs(delta.y) <= math.abs(delta.x) then
-          side = "bottom"
-        elseif delta.x >= 0 then
-          side = "right"
-        else
-          side = "left"
-        end
+    local collisionPoint = self.pos
+    local lastPoint = self.points[#self.points] or self.tailPos
+    local velAngle = V(0,0):angleTo(self.vel)
+    print(string.format("velAngle=%f", velAngle))
+
+    local rectLeftX = other.pos.x - other.width/2
+    local rectRightX = other.pos.x + other.width/2
+    local rectTopY = other.pos.y - other.height/2
+    local rectBottomY = other.pos.y + other.height/2
+
+    local dx, dy
+    dy = lastPoint.y - rectTopY
+    dx = dy / math.tan( velAngle )
+    local topCollisionX = lastPoint.x + dx
+
+    dy = lastPoint.y - rectBottomY
+    dx = dy / math.tan( velAngle )
+    local bottomCollisionX = lastPoint.x + dx
+
+    dx = lastPoint.x - rectLeftX
+    dy = dx * math.tan( velAngle )
+    local leftCollisionY = lastPoint.y + dy
+
+    dx = lastPoint.x - rectRightX
+    dy = dx * math.tan( velAngle )
+    local rightCollisionY = lastPoint.y + dy
+
+    local topCollision = rectLeftX < topCollisionX and topCollisionX < rectRightX
+    local bottomCollision = rectLeftX < bottomCollisionX and bottomCollisionX < rectRightX 
+    local leftCollision = rectTopY < leftCollisionY and leftCollisionY < rectBottomY 
+    local rightCollision = rectTopY < rightCollisionY and rightCollisionY < rectBottomY
+
+    local side = ""
+    if topCollision and velAngle < 0 then
+        side = "top"
+    elseif bottomCollision and velAngle > 0 then
+        side = "bottom"
+    elseif leftCollision and (math.pi/2 > velAngle and velAngle > -math.pi/2) then
+        side = "left"
+    else
+        side = "right"
     end
+
+    print(string.format("rectTopY=%f, rectBottomY=%f, rectLeftX=%f, rectRightX=%f", rectTopY, rectBottomY, rectLeftX, rectRightX))
+    print(string.format("topCollisionX=%f, bottomCollisionX=%f, leftCollisionY=%f, rightCollisionY=%f", topCollisionX, bottomCollisionX, leftCollisionY, rightCollisionY))
 
     print(string.format("Calculated nearest side to be %s", side))
-    if side == "top" or side == "bottom" then
-      local incidentAngle = V(0,0):angleTo(self.vel)
-      local backtrackAngle = incidentAngle + math.pi
 
-      -- dy is always positive. dx can be positive or negative
-      local dy = other.height/2 - math.abs(delta.y)
-      local dx = dy * math.tan(backtrackAngle)
-      print(string.format("incidentAngle=%f, backtrackAngle=%f, dy=%f, dx=%f", incidentAngle, backtrackAngle, dy, dx))
-      self.headPos.x = self.headPos.x + dx
-      self.headPos.y = self.headPos.y - dy
-
+    local newHeadPos
+    if side == "top" then
+      newHeadPos = V(topCollisionX, rectTopY)
       self.vel.y = self.vel.y * -1
-    else
+    elseif side == "bottom" then
+      newHeadPos = V(bottomCollisionX, rectBottomY)
+      self.vel.y = self.vel.y * -1
+    elseif side == "right" then
+      newHeadPos = V(rectRightX, rightCollisionY)
+      self.vel.x = self.vel.x * -1
+    else -- side == "left"
+      newHeadPos = V(rectLeftX, leftCollisionY)
       self.vel.x = self.vel.x * -1
     end
+
+    -- Move the head to the intersection of the vector and the rectangle.
+    print(string.format("newHeadPos=%s", tostring(newHeadPos)))
+    self.headPos = newHeadPos
+
   elseif other.physicsShapeType == "Circle" then
     print("Other object is a Circle")
     local lastPoint = self.points[#self.points] or self.tailPos

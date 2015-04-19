@@ -28,25 +28,22 @@ function level.load()
   for k,v in pairs(map.layers[1].data[1][1]) do
     print(k,v)
   end
-  --os.execute("sleep 20")
 
   for y=1, map.height do
-    for x=1, map.width do
-      if map.layers[1].data[y][x] ~= nil then
+      for x=1, map.width do
+          if map.layers[1].data[y][x] ~= nil then
 
-	local tile = GameObject.new(V((x-1)*32 + 16, (y-1)*32 + 16))
-	tile.physicsShapeType = "Rectangle"
+              local tile = GameObject.new(V((x-1)*32 + 16, (y-1)*32 + 16))
+              tile.physicsShapeType = "Rectangle"
 
-	-- One pixel smaller than they should be so the physics engine doesn't collide them all the time
-	tile.width = 31
-	tile.height = 31
+              -- One pixel smaller than they should be so the physics engine doesn't collide them all the time
+              tile.width = 32
+              tile.height = 32
 
-	GAME_MANAGER:addEntity(tile)
+              GAME_MANAGER:addEntity(tile, "foreground_tiles")
+          end
       end
-    end
   end
-  print("map inside load: " .. type(map))
-  print("love.load: initial beam.pos is " .. tostring(beam.pos))
 end
 
 function level.update(dt)
