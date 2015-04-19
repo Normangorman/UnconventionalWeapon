@@ -55,10 +55,10 @@ function love.load()
               tile.physicsShapeType = "Rectangle"
 
               -- One pixel smaller than they should be so the physics engine doesn't collide them all the time
-              tile.width = 31
-              tile.height = 31
+              tile.width = 32
+              tile.height = 32
 
-              GAME_MANAGER:addEntity(tile)
+              GAME_MANAGER:addEntity(tile, "foreground_tiles")
           end
       end
   end

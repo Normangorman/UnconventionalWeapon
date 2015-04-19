@@ -7,6 +7,7 @@ function GameObject.new(pos)
 
     self.pos = pos
     self.vel = V(0,0)
+    self.dead = false
 
     -- Physics shape type is used by GameManager when adding objects to the physics engine.
     -- Objects are responsible for setting their own shape type and dimensions, and resolving their own collisions.
