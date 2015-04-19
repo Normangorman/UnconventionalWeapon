@@ -1,0 +1,3 @@
+[submodule "lib/lovemachine"]
+	path = lib/lovemachine
+	url = https://github.com/Normangorman/lovemachine.git
