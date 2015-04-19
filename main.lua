@@ -5,6 +5,7 @@ require "lib.lovemachine.Animation.Animation"
 
 require "Beam"
 require "Enemy"
+require "EnemyTypes"
 require "GameManager"
 require "GameObject"
 require "Player"
@@ -22,11 +23,17 @@ GAME_MANAGER = GameManager.new()
 function love.load()
   player = Player.new( V(500,300) )
   beam = Beam.new(V(100,100)):setVel(V(100, 200))
-  enemy = Enemy.new(V(300,300))
+
+  enemy1 = EnemyTypes.purplegloop(V(300,300))
+  enemy1.animation:play()
+
+  enemy2 = EnemyTypes.pinkwhirl(V(500,500))
+  enemy2.animation:play()
 
   GAME_MANAGER:addEntity(beam)
   GAME_MANAGER:addEntity(player)
-  GAME_MANAGER:addEntity(enemy)
+  GAME_MANAGER:addEntity(enemy1)
+  GAME_MANAGER:addEntity(enemy2)
 
   print("love.load: initial beam.pos is " .. tostring(beam.pos))
 end
