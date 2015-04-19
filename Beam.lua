@@ -21,7 +21,7 @@ function Beam.new(initialPos)
   -- as other game objects.
   self.pos = self.headPos
 
-  self.color = {100, 150, 100}
+  self.color = {255, 255, 255}
 
   return self
 end

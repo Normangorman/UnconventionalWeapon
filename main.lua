@@ -21,6 +21,8 @@ local enemy
 GAME_MANAGER = GameManager.new()
 
 function love.load()
+  love.graphics.setBackgroundColor( 42,4,74 )
+
   player = Player.new( V(500,300) )
   beam = Beam.new(V(100,100)):setVel(V(100, 200))
 
