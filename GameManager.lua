@@ -1,5 +1,3 @@
-local HC = require "lib.HardonCollider"
-
 GameManager = {}
 GameManager.__index = GameManager
 
@@ -8,7 +6,7 @@ function GameManager.new()
   setmetatable(self, GameManager)
 
   self.physics = HC(
-    10,
+    2,
     function(...)
         self:onCollisionStart(...)
     end,
@@ -25,9 +23,15 @@ function GameManager.new()
 end
 
 function GameManager:update(dt)
-  for _, e in ipairs(self.entities) do
+  for i, e in ipairs(self.entities) do
     e:update(dt)
     self.entityPhysicsObjectMap[e]:moveTo(e.pos.x, e.pos.y)
+    if e.dead then
+        local physicsObject = self.entityPhysicsObjectMap[e]
+        self.physics:remove(physicsObject)
+        self.entityPhysicsObjectMap[e] = nil
+        table.remove(self.entities, i) 
+    end
   end
 
   self.physics:update(dt)
@@ -39,7 +43,7 @@ function GameManager:draw()
   end
 end
 
-function GameManager:addEntity(e)
+function GameManager:addEntity(e, physicsGroup)
   assert(e.physicsShapeType ~= nil)
 
   table.insert(self.entities, e)
@@ -59,6 +63,10 @@ function GameManager:addEntity(e)
 
   physicsObject._owner = e
   self.entityPhysicsObjectMap[e] = physicsObject
+
+  if physicsGroup then
+      self.physics:addToGroup(physicsGroup, physicsObject)
+  end
 end
 
 function GameManager:removeEntity(e)
@@ -84,3 +92,5 @@ function GameManager:onCollisionStop(dt, shape_a, shape_b)
 
     shape_a._owner:collisionStop(shape_b._owner, dt)
 end
+
+return GameManager
