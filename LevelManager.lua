@@ -6,16 +6,6 @@
 
 LEVEL_MANAGER = {}
 LEVEL_MANAGER.levels = {}
-LEVEL_MANAGER.levels["menu"] = require "Levels.menu"
-LEVEL_MANAGER.levels[1] =  require "Levels.1"
-
-function LEVEL_MANAGER.changeLevel(n)
-  for k, v in pairs(LEVEL_MANAGER.levels[n]) do
-    LEVEL_MANAGER[k] = LEVEL_MANAGER.levels[n][k]
-  end
-  LEVEL_MANAGER.load()
-end
-
 function LEVEL_MANAGER.levelTemplate()
   local temp = {}
   function temp.load()
@@ -30,6 +20,16 @@ function LEVEL_MANAGER.levelTemplate()
   end
   return temp
 end
+LEVEL_MANAGER.levels["menu"] = require "Levels.menu"
+LEVEL_MANAGER.levels[1] =  require "Levels.1"
+
+function LEVEL_MANAGER.changeLevel(n)
+  for k, v in pairs(LEVEL_MANAGER.levels[n]) do
+    LEVEL_MANAGER[k] = LEVEL_MANAGER.levels[n][k]
+  end
+  LEVEL_MANAGER.load()
+end
+
 
 
 
