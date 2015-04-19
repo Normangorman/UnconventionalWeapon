@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 local menu = {}
 local UI = UIManager.new()
+=======
+local menu = LEVEL_MANAGER.levelTemplate()
+>>>>>>> 9fd956334cdd40727771c5cb4dcf67fc3e6523dd
 
 function menu.load()
   local windowWidth = love.window.getWidth()

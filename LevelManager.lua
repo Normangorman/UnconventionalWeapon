@@ -6,6 +6,20 @@
 
 LEVEL_MANAGER = {}
 LEVEL_MANAGER.levels = {}
+function LEVEL_MANAGER.levelTemplate()
+  local temp = {}
+  function temp.load()
+  end
+  function temp.update(dt)
+  end
+  function temp.draw()
+  end
+  function temp.mousepressed(mx, my, button)
+  end
+  function temp.keypressed(key, isRep)
+  end
+  return temp
+end
 LEVEL_MANAGER.levels["menu"] = require "Levels.menu"
 LEVEL_MANAGER.levels[1] =  require "Levels.1"
 
@@ -15,6 +29,7 @@ function LEVEL_MANAGER.changeLevel(n)
   end
   LEVEL_MANAGER.load()
 end
+
 
 
 
