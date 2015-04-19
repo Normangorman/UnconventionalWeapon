@@ -1,5 +1,6 @@
 HC = require "lib.HardonCollider"
 V = require "lib.hump.vector"
+STI = require "lib.STI"
 
 require "lib.lovemachine.Animation.Animation"
 
