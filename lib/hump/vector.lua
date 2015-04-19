@@ -98,6 +98,10 @@ function vector.permul(a,b)
 	return new(a.x*b.x, a.y*b.y)
 end
 
+function vector.dotProduct(a,b)
+    return a.x*b.x + a.y*b.y
+end
+
 function vector:len2()
 	return self.x * self.x + self.y * self.y
 end

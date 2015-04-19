@@ -10,3 +10,14 @@ function Utils.copy(obj, seen)
   return res
 end
 
+function Utils.stack()
+    local stack = {}
+
+    function stack:push(x) table.insert(self, x) end
+    function stack:pop() return table.remove(self) end
+
+    function stack:pushBase(x) table.insert(self, 1, x) end
+    function stack:popBase() return table.remove(self, 1) end
+
+    return stack
+end

@@ -12,11 +12,10 @@ function Beam.new(initialPos)
   self.tag = "Beam"
   self.physicsShapeType = "Point"
 
-  self.points = {initialPos}
+  self.points = Utils.stack()
+
   self.headPos = Utils.copy(initialPos)
   self.tailPos = Utils.copy(initialPos)
-  -- The index of the point in the points array which the tail is ahead of.
-  self.tailIndex = 1
 
   -- self.pos is not used internally but is exposed externally so that a beam obeys the same interface
   -- as other game objects.
@@ -31,11 +30,11 @@ function Beam:update(dt)
   self.headPos = self.headPos + self.vel * dt
 
   -- Only move the tail if the length of the beam exceeds some threshold amount. Here it's 250.
-  if self:getLength() > 250 then
+  if self:getLength() > 40 then
     local vel_magnitude = self.vel:len() * dt
 
     -- Calculate the velocity that the tail needs to travel at.
-    local tailDestination = self.points[self.tailIndex + 1] or self.headPos
+    local tailDestination = self.points[1] or self.headPos
 
     local destinationVec = tailDestination - self.tailPos
     local destinationAngle = V(0,0):angleTo(destinationVec)
@@ -46,8 +45,8 @@ function Beam:update(dt)
     -- If the magnitude of this velocity is greater than the magnitude of the distance to the tail's
     -- destination, then increase tailIndex by 1 (i.e. it has gone past the destination).
     if tailVel:len() > destinationVec:len() then
-        self.tailPos = Utils.copy(tailDestination)
-        self.tailIndex = self.tailIndex + 1
+        self.tailPos = tailDestination
+        self.points:popBase()
     else
         self.tailPos = self.tailPos + tailVel
     end
@@ -73,14 +72,8 @@ end
 function Beam:getActivePoints() 
   local points = Utils.copy(self.points)
 
-  -- Drop all points before the tail.
-  for i=1, self.tailIndex do
-      table.remove(points, 1)
-  end
-  -- Insert the tail at the bottom of the stack.
-  table.insert(points, 1, self.tailPos)
-  -- Insert the head at the top of the stack.
-  table.insert(points, self.headPos)
+  points:pushBase(self.tailPos)
+  points:push(self.headPos)
 
   return points
 end
@@ -102,5 +95,58 @@ function Beam:bounce()
 end
 
 function Beam:collisionStart(other, dt, mtv_x, mtv_y)
-  
+  print(string.format("Beam:collisionStart called with mtv_x=%f, mtv_y = %f", mtv_x, mtv_y))
+  if other.physicsShapeType == "Rectangle" then
+    local delta = self.pos - other.pos
+
+    print("Other object is a Rectangle")
+    print(string.format("delta.x = %f, delta.y = %f", delta.x, delta.y))
+    local side = ""
+    if delta.y <= 0 then -- the beam is above the center of the rect
+        if math.abs(delta.y) >= math.abs(delta.x) then
+          side = "top"
+        elseif delta.x >= 0 then
+          side = "right"
+        else
+          side = "left"
+        end
+    else -- the beam is below the center of the rect
+        if math.abs(delta.y) <= math.abs(delta.x) then
+          side = "bottom"
+        elseif delta.x >= 0 then
+          side = "right"
+        else
+          side = "left"
+        end
+    end
+
+    print(string.format("Calculated nearest side to be %s", side))
+    if side == "top" or side == "bottom" then
+      self.vel.y = self.vel.y * -1
+    else
+      self.vel.x = self.vel.x * -1
+    end
+    self.headPos.x = self.headPos.x + mtv_x
+    self.headPos.y = self.headPos.y + mtv_y
+  elseif other.physicsShapeType == "Circle" then
+    print("Other object is a Circle")
+    local lastPoint = self.points[#self.points] or self.tailPos
+    local incidentVector = self.headPos - lastPoint
+    local normalVector = other.pos - self.pos
+
+    print("incidentVector: "..tostring(incidentVector).." normalVector: "..tostring(normalVector))
+    local incidentAngle = V(0,0):angleTo(incidentVector)
+    local normalAngle = V(0,0):angleTo(normalVector)
+
+    local angleDelta = normalAngle - incidentAngle
+    -- adding pi is equivalent to rotating 180 degrees, which is neccessary for the rebound.
+    local newAngle = incidentAngle + 2 * angleDelta + math.pi
+    print(string.format("angleDelta = %f (radians). newAngle = %f", angleDelta, newAngle))
+
+    local oldMagnitude = self.vel:len()
+    self.vel = V(oldMagnitude * math.cos(newAngle), oldMagnitude * math.sin(newAngle))
+    self:move(dt)
+  end
+
+  self:bounce()
 end

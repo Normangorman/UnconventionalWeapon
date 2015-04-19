@@ -12,13 +12,12 @@ local player
 local beam
 local enemy
 
-GAME_MANAGER = GameManager.new(HC)
+GAME_MANAGER = GameManager.new()
 
 function love.load()
-<<<<<<< HEAD
-  player = Player.new( V(300,300) )
+  player = Player.new( V(500,300) )
   beam = Beam.new(V(100,100)):setVel(V(100, 200))
-  enemy = Enemy.new(V(200,200)):setVel(V(-5, 5))
+  enemy = Enemy.new(V(300,300))
 
   GAME_MANAGER:addEntity(beam)
   GAME_MANAGER:addEntity(player)
@@ -33,32 +32,6 @@ end
 
 function love.draw()
   GAME_MANAGER:draw()
-=======
-  player = Player.new(): setPos(V(50, 50)):setVel(V(5, 5))
-  beam = Beam.new():setPos(V(50, 50)):setVel(V(20, 10))
-  print(beam.pos)
-  beam:bounce(beam.pos)
-end
-
-timer = 2
-function love.update(dt)
-  print(dt)
-  timer = timer - dt
-  if timer < 0 then
-    beam:bounce(beam.pos)
-    beam:setVel(V(50, 60))
-  end
-  
- player:update(dt) 
-  beam:update(dt)
-  --GAME_MANAGER.update(dt)
-end
-
-function love.draw()
-  player:draw()
-  beam:draw()
- -- GAME_MANAGER.draw()
->>>>>>> 4e9bfc621cb5c5c3cea95bbc30a9b4618d91cca0
 end
 
 function love.mousepressed(mx, my, button)

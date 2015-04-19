@@ -76,6 +76,7 @@ function GameManager:onCollisionStart(dt, shape_a, shape_b, mtv_x, mtv_y)
     print(string.format("Collision started! shape_a._owner.tag = %s, shape_b._owner.tag = %s", shape_a._owner.tag, shape_b._owner.tag))
 
     shape_a._owner:collisionStart(shape_b._owner, dt, mtv_x, mtv_y)
+    shape_b._owner:collisionStart(shape_a._owner, dt, mtv_x, mtv_y)
 end
 
 function GameManager:onCollisionStop(dt, shape_a, shape_b)
