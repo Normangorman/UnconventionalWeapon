@@ -21,9 +21,10 @@ function LEVEL_MANAGER.levelTemplate()
   return temp
 end
 LEVEL_MANAGER.levels["menu"] = require "Levels.menu"
-LEVEL_MANAGER.levels[1] =  require "Levels.1"
+LEVEL_MANAGER.levels["level1"] = require "Levels.level1"
 
 function LEVEL_MANAGER.changeLevel(n)
+  print("Changing level to "..n)
   for k, v in pairs(LEVEL_MANAGER.levels[n]) do
     LEVEL_MANAGER[k] = LEVEL_MANAGER.levels[n][k]
     LEVEL_MANAGER.GM = LEVEL_MANAGER.GAME_MANAGER

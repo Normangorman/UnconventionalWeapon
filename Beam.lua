@@ -102,7 +102,7 @@ function Beam:bounce()
 end
 
 function Beam:die()
-    print("Beam died.")
+    print("Beam beginning to die.")
     self.dead = true
 end
 
