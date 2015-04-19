@@ -16,6 +16,21 @@ function LEVEL_MANAGER.changeLevel(n)
   LEVEL_MANAGER.load()
 end
 
+function LEVEL_MANAGER.levelTemplate()
+  local temp = {}
+  function temp.load()
+  end
+  function temp.update(dt)
+  end
+  function temp.draw()
+  end
+  function temp.mousepressed(mx, my, button)
+  end
+  function temp.keypressed(key, isRep)
+  end
+  return temp
+end
+
 
 
 

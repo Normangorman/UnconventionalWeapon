@@ -1,4 +1,4 @@
-local menu = {}
+local menu = LEVEL_MANAGER.levelTemplate()
 
 function menu.load()
 end

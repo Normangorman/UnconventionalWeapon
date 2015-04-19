@@ -1,4 +1,4 @@
-local level = {}
+local level = LEVEL_MANAGER.levelTemplate()
 local player
 local beam
 local enemy
