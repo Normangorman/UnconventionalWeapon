@@ -3,6 +3,12 @@ V = require "lib.hump.vector"
 STI = require "lib.STI"
 
 require "lib.lovemachine.Animation.Animation"
+require "lib.lovemachine.UI.Hierarchy"
+require "lib.lovemachine.UI.Settings"
+require "lib.lovemachine.UI.UIManager"
+require "lib.lovemachine.UI.Widgets.Widget"
+require "lib.lovemachine.UI.Widgets.Text"
+require "lib.lovemachine.UI.Widgets.Button"
 
 require "Beam"
 require "Enemy"
