@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-local menu = {}
-local UI = UIManager.new()
-=======
 local menu = LEVEL_MANAGER.levelTemplate()
->>>>>>> 9fd956334cdd40727771c5cb4dcf67fc3e6523dd
 
 function menu.load()
+  menu.UI = UIManager.new()
   local windowWidth = love.window.getWidth()
   local windowHeight = love.window.getHeight()
 
@@ -17,17 +13,17 @@ function menu.load()
   local mediumFont = love.graphics.newFont("Assets/ASMAN.TTF", 30)
   local buttonText = Text.new("Play", 0, 200, windowWidth, "center", nil, mediumFont)
 
-  UI:addWidget(titleText)
-  UI:addWidget(buttonText)
+  menu.UI:addWidget(titleText)
+  menu.UI:addWidget(buttonText)
 end
 
 function menu.update(dt)
-  UI:update(dt)
+  menu.UI:update(dt)
 end
 
 function menu.draw()
   love.graphics.setBackgroundColor(00, 200, 00)
-  UI:draw()
+  menu.UI:draw()
 end
 
 return menu
