@@ -15,7 +15,8 @@ require "Utils"
 if arg[#arg] == "-debug" then require("mobdebug").start() end
 
 function love.load()
-  require "LevelManager" -- calls level.load on level 1
+  require "LevelManager"
+  LEVEL_MANAGER.changeLevel("menu")
 end
 
 function love.update(dt)

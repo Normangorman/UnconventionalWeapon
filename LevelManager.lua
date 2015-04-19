@@ -6,7 +6,8 @@
 
 LEVEL_MANAGER = {}
 LEVEL_MANAGER.levels = {}
-LEVEL_MANAGER.levels[1] = require "Levels.1"
+LEVEL_MANAGER.levels["menu"] = require "Levels.menu"
+LEVEL_MANAGER.levels[1] =  require "Levels.1"
 
 function LEVEL_MANAGER.changeLevel(n)
   for k, v in pairs(LEVEL_MANAGER.levels[n]) do
@@ -15,9 +16,6 @@ function LEVEL_MANAGER.changeLevel(n)
   LEVEL_MANAGER.load()
 end
 
-LEVEL_MANAGER.changeLevel(1)
-
-return LEVEL_MANAGER
 
 
 
