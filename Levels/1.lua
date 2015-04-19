@@ -6,6 +6,8 @@ local map
 
 function level.load()
   GAME_MANAGER = require("GameManager").new()
+  level.GAME_MANAGER = GAME_MANAGER --GIve LEVEL_MANAGER access to the GM
+
   love.graphics.setBackgroundColor( 42,4,74 )
 
   player = Player.new( V(500,300) )
@@ -74,6 +76,8 @@ function level.mousepressed(mx, my, button)
   print( string.format("love.mousepressed - mx = %d, my = %d", mx, my) )
   local newVel = (V(mx, my) - beam.headPos) 
   beam.vel = newVel
+  local newbeam = Beam.new(V(mx, my)):setVel(V(math.random()*400,math.random()*400))
+  GAME_MANAGER:addEntity(newbeam)
 end
 
 return level

@@ -26,6 +26,7 @@ LEVEL_MANAGER.levels[1] =  require "Levels.1"
 function LEVEL_MANAGER.changeLevel(n)
   for k, v in pairs(LEVEL_MANAGER.levels[n]) do
     LEVEL_MANAGER[k] = LEVEL_MANAGER.levels[n][k]
+    LEVEL_MANAGER.GM = LEVEL_MANAGER.GAME_MANAGER
   end
   LEVEL_MANAGER.load()
 end
