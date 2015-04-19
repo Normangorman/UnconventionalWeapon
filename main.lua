@@ -20,9 +20,16 @@ require "Utils"
 -- Work with the zerobrane debugger
 if arg[#arg] == "-debug" then require("mobdebug").start() end
 
+local NOMENU = false
+
 function love.load()
   require "LevelManager"
-  LEVEL_MANAGER.changeLevel("menu")
+
+  if NOMENU then
+    LEVEL_MANAGER.changeLevel("level1")
+  else
+    LEVEL_MANAGER.changeLevel("menu")
+  end
 end
 
 function love.update(dt)
