@@ -1,5 +1,3 @@
-local HC = require "lib.HardonCollider"
-
 GameManager = {}
 GameManager.__index = GameManager
 

@@ -1,5 +1,3 @@
-require "GameObject"
-
 Enemy = {}
 setmetatable(Enemy, GameObject)
 Enemy.__index = Enemy

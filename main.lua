@@ -1,9 +1,14 @@
-require "asserts"
+HC = require "lib.HardonCollider"
 V = require "lib.hump.vector"
-require "Player"
+
+require "lib.lovemachine.Animation.Animation"
+
 require "Beam"
 require "Enemy"
 require "GameManager"
+require "GameObject"
+require "Player"
+require "Utils"
 
 -- Work with the zerobrane debugger
 if arg[#arg] == "-debug" then require("mobdebug").start() end
