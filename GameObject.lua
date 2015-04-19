@@ -28,9 +28,8 @@ function GameObject.new(pos)
     return self
 end
 
-function GameObject:setTag(tag)
-    self.tag = tag
-end
+function GameObject:update(dt) end
+function GameObject:draw() end
 
 function GameObject:setPos(pos)
   self.pos = pos

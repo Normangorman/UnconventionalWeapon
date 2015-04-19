@@ -18,6 +18,7 @@ if arg[#arg] == "-debug" then require("mobdebug").start() end
 local player
 local beam
 local enemy
+local map
 
 GAME_MANAGER = GameManager.new()
 
@@ -30,7 +31,7 @@ function love.load()
   enemy1 = EnemyTypes.purplegloop(V(300,300))
   enemy1.animation:play()
 
-  enemy2 = EnemyTypes.pinkwhirl(V(500,500))
+  enemy2 = EnemyTypes.pinkwhirl(V(700,300))
   enemy2.animation:play()
 
   GAME_MANAGER:addEntity(beam)
@@ -38,15 +39,39 @@ function love.load()
   GAME_MANAGER:addEntity(enemy1)
   GAME_MANAGER:addEntity(enemy2)
 
+  map = STI.new("Maps/map1")
+  -- Add all the tiles to the physics world
+  print("Printing map.layers[1].data[1][1]:")
+  for k,v in pairs(map.layers[1].data[1][1]) do
+      print(k,v)
+  end
+  --os.execute("sleep 20")
+
+  for y=1, map.height do
+      for x=1, map.width do
+          if map.layers[1].data[y][x] ~= nil then
+
+              local tile = GameObject.new(V((x-1)*32 + 16, (y-1)*32 + 16))
+              tile.physicsShapeType = "Rectangle"
+              tile.width = 32
+              tile.height = 32
+
+              GAME_MANAGER:addEntity(tile)
+          end
+      end
+  end
+
   print("love.load: initial beam.pos is " .. tostring(beam.pos))
 end
 
 function love.update(dt)
   GAME_MANAGER:update(dt)
+  map:update(dt)
 end
 
 function love.draw()
   GAME_MANAGER:draw()
+  map:draw()
 end
 
 function love.mousepressed(mx, my, button)
