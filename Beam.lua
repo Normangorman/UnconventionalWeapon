@@ -105,6 +105,7 @@ function Beam:collisionStart(other, dt, mtv_x, mtv_y)
     if delta.y <= 0 then -- the beam is above the center of the rect
         if math.abs(delta.y) >= math.abs(delta.x) then
           side = "top"
+
         elseif delta.x >= 0 then
           side = "right"
         else
@@ -122,12 +123,20 @@ function Beam:collisionStart(other, dt, mtv_x, mtv_y)
 
     print(string.format("Calculated nearest side to be %s", side))
     if side == "top" or side == "bottom" then
+      local incidentAngle = V(0,0):angleTo(self.vel)
+      local backtrackAngle = incidentAngle + math.pi
+
+      -- dy is always positive. dx can be positive or negative
+      local dy = other.height/2 - math.abs(delta.y)
+      local dx = dy * math.tan(backtrackAngle)
+      print(string.format("incidentAngle=%f, backtrackAngle=%f, dy=%f, dx=%f", incidentAngle, backtrackAngle, dy, dx))
+      self.headPos.x = self.headPos.x + dx
+      self.headPos.y = self.headPos.y - dy
+
       self.vel.y = self.vel.y * -1
     else
       self.vel.x = self.vel.x * -1
     end
-    self.headPos.x = self.headPos.x + mtv_x
-    self.headPos.y = self.headPos.y + mtv_y
   elseif other.physicsShapeType == "Circle" then
     print("Other object is a Circle")
     local lastPoint = self.points[#self.points] or self.tailPos

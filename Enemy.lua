@@ -28,7 +28,6 @@ function Enemy:draw()
 end
 
 function Enemy:update(dt)
-    print "enemy updated"
   self:move(dt)
 
   if self.animation then

@@ -53,8 +53,10 @@ function love.load()
 
               local tile = GameObject.new(V((x-1)*32 + 16, (y-1)*32 + 16))
               tile.physicsShapeType = "Rectangle"
-              tile.width = 32
-              tile.height = 32
+
+              -- One pixel smaller than they should be so the physics engine doesn't collide them all the time
+              tile.width = 31
+              tile.height = 31
 
               GAME_MANAGER:addEntity(tile)
           end

@@ -6,7 +6,7 @@ function GameManager.new()
   setmetatable(self, GameManager)
 
   self.physics = HC(
-    10,
+    1,
     function(...)
         self:onCollisionStart(...)
     end,
