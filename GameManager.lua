@@ -6,7 +6,7 @@ function GameManager.new()
   setmetatable(self, GameManager)
 
   self.physics = HC(
-    1,
+    2,
     function(...)
         self:onCollisionStart(...)
     end,
@@ -82,3 +82,5 @@ function GameManager:onCollisionStop(dt, shape_a, shape_b)
 
     shape_a._owner:collisionStop(shape_b._owner, dt)
 end
+
+return GameManager
