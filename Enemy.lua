@@ -1,5 +1,3 @@
-require "GameObject"
-
 Enemy = {}
 setmetatable(Enemy, GameObject)
 Enemy.__index = Enemy
@@ -9,24 +7,32 @@ function Enemy.new(pos)
   setmetatable(self, Enemy)
 
   self.tag = "Enemy"
-  self.physicsShapeType = "Rectangle"
-  self.width = 30
-  self.height = 30
+  self.physicsShapeType = "Circle"
+  self.radius = 32
 
-  self.dims = V(25, 25)
   self.color = {255,255,0}
+  self.animation = nil
 
   return self
 end
 
 function Enemy:draw()
   love.graphics.setColor( unpack(self.color) )
-  love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.width, self.height)
+  if self.animation then
+    -- animation:draw assumes the position given is the top-left corner
+    self.animation:draw(self.pos.x - self.radius, self.pos.y - self.radius)
+  else
+    love.graphics.circle("fill", self.pos.x, self.pos.y, self.radius)
+  end
   love.graphics.setColor(255,255,255)
 end
 
 function Enemy:update(dt)
-    self:move(dt)
+  self:move(dt)
+
+  if self.animation then
+    self.animation:update(dt)
+  end
 end
 
 function Enemy:attack(player)
