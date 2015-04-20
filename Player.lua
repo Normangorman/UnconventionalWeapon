@@ -19,7 +19,7 @@ function Player.new(game, pos)
 
 
     -- Physics settings
-    self.body = love.physics.newBody(game:getPhysicsWorld(), pos.x, pos.y, "static")
+    self.body = love.physics.newBody(game:getPhysicsWorld(), pos.x, pos.y, "kinematic")
 
     self.innerShape = love.physics.newCircleShape(self.innerRadius)
     self.innerFixture = love.physics.newFixture(self.body, self.innerShape)
@@ -39,6 +39,8 @@ function Player:update(dt)
     local newMirrorRotation = delta:angleTo() - self.mirrorAngleSize / 2
 
     self.mirrorRotation = newMirrorRotation
+
+    self.body:setLinearVelocity(0,0)
 end
 
 function Player:draw()
@@ -73,30 +75,20 @@ function Player:hurt(amount)
 end
 
 function Player:tryBounceBeam(x,y,nx,ny)
-    -- Within this function, change all angles to 0 < theta before comparison.
-    local normalizeAngle = function(theta)
-        while theta < 0 do
-            theta = theta + math.pi * 2
-        end
-        return theta
-    end
-
     print("Player:tryBounceBeam called")
-    local collisionDelta = V(x,y) - self:getPos()
-    local collisionAngle = normalizeAngle(collisionDelta:angleTo())
+    local collDir = V(x,y) - self:getPos()
+    local startDir = V(math.cos(self.mirrorRotation), math.sin(self.mirrorRotation))
+    local endDir = V(math.cos(self.mirrorRotation + self.mirrorAngleSize), math.sin(self.mirrorRotation + self.mirrorAngleSize))
 
-    local mirrorStartVector = V(math.cos(self.mirrorRotation), math.sin(self.mirrorRotation))
-    local mirrorStartAngle = normalizeAngle(mirrorStartVector:angleTo())
+    
+    local collToStart = math.acos( (collDir * startDir) / (collDir:len() * startDir:len()) )
+    local collToEnd = math.acos( (collDir * endDir) / (collDir:len() * endDir:len()) )
 
-    local mirrorEndAngle = mirrorStartAngle + self.mirrorAngleSize
+    print(string.format("collToStart=%f, collToEnd=%f", collToStart, collToEnd))
 
-    print(string.format("collisionAngle=%f, mirrorStartAngle=%f, mirrorEndAngle=%f", collisionAngle, mirrorStartAngle, mirrorEndAngle))
-
-    if mirrorStartAngle < collisionAngle and collisionAngle < mirrorEndAngle then
-        print("Returning true")
+    if collToStart < self.mirrorAngleSize and collToEnd < self.mirrorAngleSize then
         return true
     else
-        print("Returning false")
         return false
     end
 end

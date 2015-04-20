@@ -15,6 +15,9 @@ function Beam.new(game, pos, angle, vel_mag)
     self.maxBounces = 7 -- it will die after this many bounces
     self.maxLength = 200
 
+    self.color = {235,239,11}
+    self.beamWidth = 5
+
     self.tailPos = pos:clone()
     self.headPos = pos:clone()
 
@@ -139,16 +142,29 @@ function Beam:die()
 end
 
 function Beam:draw()
-    love.graphics.setColor(193,17,14)
-
     -- Connect all the points in the stack
     local points = self:getActivePoints()
     
     for i=1, #points-1 do
-        love.graphics.line(points[i].x, points[i].y, points[i+1].x, points[i+1].y)
+        self:drawSegment(points[i].x, points[i].y, points[i+1].x, points[i+1].y)
     end
+end
 
-    love.graphics.setColor(255,255,255)
+function Beam:drawSegment(x1,y1, x2,y2)
+    local r,g,b = unpack(self.color)
+
+    love.graphics.setColor(r,g,b,255)
+    love.graphics.line(x1,y1, x2,y2)
+
+    love.graphics.setColor(r,g,b,200)
+    love.graphics.line(x1-1,y1+1, x2-1,y2+1)
+    love.graphics.line(x1+1,y1-1, x2+1,y2-1)
+
+    love.graphics.setColor(r,g,b,100)
+    love.graphics.line(x1-2,y1+2, x2-2,y2+2)
+    love.graphics.line(x1+2,y1-2, x2+2,y2-2)
+
+    love.graphics.setColor(255,255,255,255)
 end
 
 function Beam:getDebugText()

@@ -5,6 +5,7 @@ function GameManager.new()
     local self = {}
     setmetatable(self, GameManager)
 
+    -- Physics
     love.physics.setMeter(64) -- 64px is one meter
     -- args are xgravity, ygravity, can bodies sleep?
     self.physicsWorld = love.physics.newWorld(0, 9.81*64, true)
@@ -15,23 +16,92 @@ function GameManager.new()
         function(...) self:postSolve(...) end
     )
 
+    -- Tilemap
+    local map = STI.new("Maps/map1")
+    map:initWorldCollision(self.physicsWorld)
+    self.map = map
+
+    -- Pathfinding
+    self.rawMapData = {
+        {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 2},
+        {2, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 2},
+        {2, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}
+      }
+
+    local grid = Jumper_Grid(self.rawMapData)
+    local walkable = 0
+    self.pathfinder = Jumper_Pathfinder(grid, 'JPS', walkable)
+
+    -- Entities
     self.entities = {}
+    local player = Player.new(self, V(500,300))
+    self.player = player
+
+    local enemy1 = EnemyTypes.purplegloop(self, V(100,100))
+    enemy1.animation:play()
+
+    self:addEntity(player)
+    self:addEntity(enemy1)
+
+    self.backgroundImage = love.graphics.newImage("Assets/background_960x800.png")
 
     return self 
 end
 
 function GameManager:update(dt)
+    local vx, vy = self.player.body:getLinearVelocity()
+
+    local speed = 300
+    if love.keyboard.isDown('left') then
+        vx = vx - speed
+    elseif love.keyboard.isDown('right') then
+        vx = vx + speed
+    end
+
+    if love.keyboard.isDown('up') then
+        vy = vy - speed
+    elseif love.keyboard.isDown('down') then
+        vy = vy + speed
+    end
+
+    self.player.body:setLinearVelocity(vx, vy)
+
+    self.physicsWorld:update(dt)
+
     for i, e in ipairs(self.entities) do
         e:update(dt)
         if e.dead then
             table.remove(self.entities, i) 
         end
     end
-
-    self.physicsWorld:update(dt)
 end
 
 function GameManager:draw()
+    love.graphics.draw(self.backgroundImage, 0, 0)
+    self.map:draw()
+
     for _, e in ipairs(self.entities) do
         e:draw()
     end
@@ -72,4 +142,10 @@ function GameManager:removeEntity(e)
             break
         end
     end
+end
+
+function GameManager:keypressed(key, isRep)
+end
+
+function GameManager:mousepressed(mx, my, button)
 end

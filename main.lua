@@ -1,5 +1,7 @@
 V = require "lib.hump.vector"
 STI = require "lib.STI"
+Jumper_Grid = require "lib.Jumper.jumper.grid"
+Jumper_Pathfinder = require "lib.Jumper.jumper.pathfinder"
 
 require "lib.lovemachine.Animation.Animation"
 require "lib.lovemachine.UI.Hierarchy"
@@ -27,8 +29,12 @@ PAUSED = false
 LEVEL_MANAGER = LevelManager.new()
 LEVEL_MANAGER.levels["menu"] = require("Levels.menu")
 LEVEL_MANAGER.levels["level1"] = require("Levels.level1")
+LEVEL_MANAGER.levels["instructions"] = require("Levels.instructions")
 
 function love.load()
+    local themeMusic = love.audio.newSource("Assets/Neon Mirror Theme.wav", "stream")
+    love.audio.play(themeMusic)
+
     if NOMENU then
         LEVEL_MANAGER:changeLevel("level1")
     else

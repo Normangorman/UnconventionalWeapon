@@ -7,3 +7,6 @@
 [submodule "lib/STI"]
 	path = lib/STI
 	url = https://github.com/karai17/Simple-Tiled-Implementation.git
+[submodule "lib/Jumper"]
+	path = lib/Jumper
+	url = https://github.com/Yonaba/Jumper.git
