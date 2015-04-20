@@ -2,71 +2,67 @@ GameManager = {}
 GameManager.__index = GameManager
 
 function GameManager.new()
-  local self = {}
-  setmetatable(self, GameManager)
+    local self = {}
+    setmetatable(self, GameManager)
 
-  self.physics = HC(
-    2,
-    function(...)
-        self:onCollisionStart(...)
-    end,
-    function(...)
-        self:onCollisionStop(...)
-    end
-  )
+    love.physics.setMeter(64) -- 64px is one meter
+    -- args are xgravity, ygravity, can bodies sleep?
+    self.physicsWorld = love.physics.newWorld(0, 9.81*64, true)
+    self.physicsWorld:setCallbacks(
+        function(...) self:beginContact(...) end,
+        function(...) self:endContact(...) end,
+        function(...) self:preSolve(...) end,
+        function(...) self:postSolve(...) end
+    )
 
-  self.entities = {}
-  -- A mapping between entities and their physics objects.
-  self.entityPhysicsObjectMap = {}
+    self.entities = {}
 
-  return self 
+    return self 
 end
 
 function GameManager:update(dt)
-  for i, e in ipairs(self.entities) do
-    e:update(dt)
-    self.entityPhysicsObjectMap[e]:moveTo(e.pos.x, e.pos.y)
-    if e.dead then
-        local physicsObject = self.entityPhysicsObjectMap[e]
-        self.physics:remove(physicsObject)
-        self.entityPhysicsObjectMap[e] = nil
-        table.remove(self.entities, i) 
+    for i, e in ipairs(self.entities) do
+        e:update(dt)
+        if e.dead then
+            table.remove(self.entities, i) 
+        end
     end
-  end
 
-  self.physics:update(dt)
+    self.physicsWorld:update(dt)
 end
 
 function GameManager:draw()
-  for _, e in ipairs(self.entities) do
-    e:draw()
-  end
+    for _, e in ipairs(self.entities) do
+        e:draw()
+    end
 end
 
-function GameManager:addEntity(e, physicsGroup)
-  assert(e.physicsShapeType ~= nil)
+function GameManager:getPhysicsWorld()
+    return self.physicsWorld
+end
 
-  table.insert(self.entities, e)
+-- COLLISION RESPONSE:
+-- a and b are fixtures, coll is the collision point.
+function GameManager:beginContact(a,b,coll)
+end
 
-  local physicsObject
-  local shape = e.physicsShapeType
+function GameManager:endContact(a,b,coll)
+    local a_user = a:getUserData()
+    local b_user = b:getUserData()
 
-  if shape == "Rectangle" then
-      assert(e.width ~= nil, e.height ~= nil)
-      physicsObject = self.physics:addRectangle(e.pos.x, e.pos.y, e.width, e.height)
-  elseif shape == "Circle" then
-      assert(e.radius ~= nil)
-      physicsObject = self.physics:addCircle(e.pos.x, e.pos.y, e.radius)
-  elseif shape == "Point" then
-      physicsObject = self.physics:addPoint(e.pos.x, e.pos.y)
-  end
+    print("endContact called")
+    print(string.format("a_user.tag=%s, b_user.tag=%s", a_user.tag, b_user.tag))
+end
 
-  physicsObject._owner = e
-  self.entityPhysicsObjectMap[e] = physicsObject
+-- preSolve and postSolve can be called multiple times in between beginContact and endContact
+function GameManager:preSolve(a,b,coll)
+end
 
-  if physicsGroup then
-      self.physics:addToGroup(physicsGroup, physicsObject)
-  end
+function GameManager:postSolve(a,b,coll, normalImpulse1, tangentImpulse1, normalImpulse2, tangentImpulse2)
+end
+
+function GameManager:addEntity(e)
+    table.insert(self.entities, e)
 end
 
 function GameManager:removeEntity(e)
@@ -76,21 +72,4 @@ function GameManager:removeEntity(e)
             break
         end
     end
-
-    self.entityPhysicsObjectMap[e] = nil
 end
-
-function GameManager:onCollisionStart(dt, shape_a, shape_b, mtv_x, mtv_y)
-    print(string.format("Collision started! shape_a._owner.tag = %s, shape_b._owner.tag = %s", shape_a._owner.tag, shape_b._owner.tag))
-
-    shape_a._owner:collisionStart(shape_b._owner, dt, mtv_x, mtv_y)
-    shape_b._owner:collisionStart(shape_a._owner, dt, mtv_x, mtv_y)
-end
-
-function GameManager:onCollisionStop(dt, shape_a, shape_b)
-    print(string.format("Collision stopped! shape_a._owner.tag = %s, shape_b._owner.tag = %s", shape_a._owner.tag, shape_b._owner.tag))
-
-    shape_a._owner:collisionStop(shape_b._owner, dt)
-end
-
-return GameManager

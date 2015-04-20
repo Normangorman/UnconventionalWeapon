@@ -1,79 +1,56 @@
-local level = LEVEL_MANAGER.levelTemplate()
-local player
-local beam
-local enemy
-local map
+local level = LevelManager.levelTemplate()
 
 function level.load()
-  GAME_MANAGER = require("GameManager").new()
-  love.graphics.setBackgroundColor( 42,4,74 )
+    local game = GameManager.new()
+    level.game = game
 
-  player = Player.new( V(500,300) )
-  beam = Beam.new(V(100,100)):setVel(V(100, 200))
+    local player = Player.new(game, V(500,300))
+    level.player = player
 
-  enemy1 = EnemyTypes.purplegloop(V(300,300))
-  enemy1.animation:play()
+    local enemy1 = EnemyTypes.purplegloop(game, V(100,100))
+    enemy1.animation:play()
 
-  enemy2 = EnemyTypes.pinkwhirl(V(700,300))
-  enemy2.animation:play()
+    --local enemy2 = EnemyTypes.pinkwhirl(game, V(700,300))
+    --enemy2.animation:play()
 
-  GAME_MANAGER:addEntity(beam)
-  GAME_MANAGER:addEntity(player)
-  GAME_MANAGER:addEntity(enemy1)
-  GAME_MANAGER:addEntity(enemy2)
+    game:addEntity(player)
+    game:addEntity(enemy1)
+    --game:addEntity(enemy2)
 
-  map = STI.new("Maps/map1")
-  -- Add all the tiles to the physics world
-  print("Printing map.layers[1].data[1][1]:")
-  for k,v in pairs(map.layers[1].data[1][1]) do
-    print(k,v)
-  end
+    level.map = STI.new("Maps/map1")
+    level.map:initWorldCollision(game:getPhysicsWorld())
 
-  for y=1, map.height do
-      for x=1, map.width do
-          if map.layers[1].data[y][x] ~= nil then
-
-              local tile = GameObject.new(V((x-1)*32 + 16, (y-1)*32 + 16))
-              tile.physicsShapeType = "Rectangle"
-
-              -- One pixel smaller than they should be so the physics engine doesn't collide them all the time
-              tile.width = 32
-              tile.height = 32
-
-              GAME_MANAGER:addEntity(tile, "foreground_tiles")
-          end
-      end
-  end
+    love.graphics.setBackgroundColor( 42,4,74 )
 end
 
 function level.update(dt)
-  print("map: " .. type(map))
-  GAME_MANAGER:update(dt)
-  map:update(dt)
+    local playerX = level.player.body:getX()
+    local playerY = level.player.body:getY()
+
+    if love.keyboard.isDown('left') then
+        level.player.body:setX(playerX - 4) 
+    elseif love.keyboard.isDown('right') then
+        level.player.body:setX(playerX + 4) 
+    end
+
+    if love.keyboard.isDown('up') then
+        level.player.body:setY(playerY - 4) 
+    elseif love.keyboard.isDown('down') then
+        level.player.body:setY(playerY + 4)
+    end
+    level.game:update(dt)
 end
 
 function level.draw()
-  GAME_MANAGER:draw()
-  map:draw()
+    level.map:draw()
+    level.game:draw()
 end
 
 function level.keypressed(key, isRep)
-  if key == "up" then
-    player.pos.y = player.pos.y - 10
-  elseif key == "right" then
-    player.pos.x = player.pos.x + 10 
-  elseif key == "down" then
-    player.pos.y = player.pos.y + 10 
-  elseif key == "left" then
-    player.pos.x = player.pos.x - 10 
-  end
 end
 
 function level.mousepressed(mx, my, button)
-  beam:bounce()
-  print( string.format("love.mousepressed - mx = %d, my = %d", mx, my) )
-  local newVel = (V(mx, my) - beam.headPos) 
-  beam.vel = newVel
+    -- level.player:debugBeam(mx, my)
 end
 
 return level

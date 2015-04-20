@@ -39,7 +39,9 @@ return {
       height = 25,
       visible = true,
       opacity = 1,
-      properties = {},
+      properties = {
+          collidable = "true"
+      },
       encoding = "lua",
       data = {
         2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,

@@ -1,4 +1,4 @@
-local menu = LEVEL_MANAGER.levelTemplate()
+local menu = LevelManager.levelTemplate()
 
 function menu.load()
   menu.UI = UIManager.new()
