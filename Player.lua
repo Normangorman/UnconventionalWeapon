@@ -15,7 +15,7 @@ function Player.new(game, pos)
     self.outerRadius = 65
 
     self.color = {255,255,255}
-    self.health = 1
+    self.health = 10
 
 
     -- Physics settings
