@@ -5,6 +5,17 @@ function GameManager.new()
     local self = {}
     setmetatable(self, GameManager)
 
+    -- UI
+    self.UI = UIManager.new()
+    local font = love.graphics.newFont("Assets/ASMAN.TTF", 40)
+    self.healthText = Text.new("Health: 10", 38, 38, 500, "left", nil, font)
+    self.scoreText = Text.new("Score: 0", 238, 38, 500, "left", nil, font)
+    self.waveText = Text.new("Wave: 1", 438, 38, 500, "left", nil, font)
+
+    self.UI:addWidget(self.healthText)
+    self.UI:addWidget(self.scoreText)
+    self.UI:addWidget(self.waveText)
+
     -- Physics
     love.physics.setMeter(64) -- 64px is one meter
     -- args are xgravity, ygravity, can bodies sleep?
@@ -58,12 +69,14 @@ function GameManager.new()
     self.entities = {}
     local player = Player.new(self, V(500,300))
     self.player = player
+    self.playerScore = 0
 
-    local enemy1 = EnemyTypes.purplegloop(self, V(100,100))
-    enemy1.animation:play()
+    self.enemyCount = 0
+    self.nextWaveNumber = 1
+    self.waveStarting = false
+    self.waveStartTimer = 0
 
     self:addEntity(player)
-    self:addEntity(enemy1)
 
     self.backgroundImage = love.graphics.newImage("Assets/background_960x800.png")
 
@@ -71,6 +84,44 @@ function GameManager.new()
 end
 
 function GameManager:update(dt)
+    -- Handle waves:
+    if self.enemyCount == 0 and not self.waveStarting then 
+        self.waveStarting = true
+        self.waveStartTimer = 2.0
+    end
+
+    if self.waveStarting then
+        if self.waveStartTimer <= 0 then -- spawn the enemies
+            print(string.format("WAVE %d STARTING", self.nextWaveNumber))
+            local spawnPoints = {
+                V(48,48), V(896,48),
+                V(48,736), V(896,736)
+            }
+            local numEnemies = self.nextWaveNumber
+
+            for i=1,numEnemies do
+                -- Choose a random spawn point from the list
+                local spawnPointIndex = math.floor(love.math.random(1.0, 4.99))
+                local spawnPoint = spawnPoints[spawnPointIndex]
+
+                local enemy
+                if math.random() > 0.5 then
+                    enemy = EnemyTypes.purplegloop(self, spawnPoint)
+                else
+                    enemy = EnemyTypes.pinkwhirl(self, spawnPoint)
+                end
+                enemy.animation:play()
+                self:addEntity(enemy)
+            end
+
+            self.enemyCount = numEnemies
+            self.nextWaveNumber = self.nextWaveNumber + 1
+            self.waveStarting = false
+        else -- reduce the timer
+            self.waveStartTimer = self.waveStartTimer - dt
+        end
+    end
+
     local vx, vy = self.player.body:getLinearVelocity()
 
     local speed = 300
@@ -93,9 +144,16 @@ function GameManager:update(dt)
     for i, e in ipairs(self.entities) do
         e:update(dt)
         if e.dead then
+            print("GameManager removed dead entity.")
             table.remove(self.entities, i) 
         end
     end
+
+    -- Update UI
+    self.healthText:setText("Health: "..tostring(self.player.health))
+    self.scoreText:setText("Score: "..tostring(self.playerScore))
+    self.waveText:setText("Wave: "..tostring(self.nextWaveNumber - 1))
+    self.UI:update(dt)
 end
 
 function GameManager:draw()
@@ -105,6 +163,8 @@ function GameManager:draw()
     for _, e in ipairs(self.entities) do
         e:draw()
     end
+
+    self.UI:draw()
 end
 
 function GameManager:getPhysicsWorld()

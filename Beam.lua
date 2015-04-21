@@ -12,7 +12,7 @@ function Beam.new(game, pos, angle, vel_mag)
 
     self.points = Utils.stack()
     self.numBounces = 0
-    self.maxBounces = 7 -- it will die after this many bounces
+    self.maxBounces = 5 -- it will die after this many bounces
     self.maxLength = 200
 
     self.color = {235,239,11}
@@ -47,7 +47,14 @@ function Beam:handleRayCastCollision(fixture, x, y, xn, yn, fraction)
         else -- fixture == player.innerFixture
             player:hurt(1)
             self:die()
+            return 0
         end
+    elseif fixtureOwner.tag == "Enemy" then
+        local enemy = fixtureOwner
+
+        enemy:die()
+        self:die()
+        return 0
     end
 
     -- Change the position of the bullet to be the position of the collision

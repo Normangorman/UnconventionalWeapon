@@ -23,8 +23,10 @@ require "Utils"
 -- Work with the zerobrane debugger
 if arg[#arg] == "-debug" then require("mobdebug").start() end
 
-local NOMENU = true
+local NOMENU = false
 PAUSED = false
+
+HIGH_SCORE = nil
 
 LEVEL_MANAGER = LevelManager.new()
 LEVEL_MANAGER.levels["menu"] = require("Levels.menu")

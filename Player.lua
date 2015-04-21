@@ -15,7 +15,7 @@ function Player.new(game, pos)
     self.outerRadius = 65
 
     self.color = {255,255,255}
-    self.health = 10
+    self.health = 1
 
 
     -- Physics settings
@@ -72,6 +72,11 @@ end
 function Player:hurt(amount)
     print(string.format("Player was hurt by %d. Current health = %d", amount, self.health))
     self.health = self.health - amount
+
+    if self.health == 0 then
+        HIGH_SCORE = self.game.playerScore
+        LEVEL_MANAGER:changeLevel("menu")
+    end
 end
 
 function Player:tryBounceBeam(x,y,nx,ny)

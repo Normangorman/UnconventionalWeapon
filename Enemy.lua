@@ -33,19 +33,18 @@ function Enemy:update(dt)
         self.animation:update(dt)
     end
 
-    if math.random() < 0.01 then
+    if math.random() < 0.0085 then
         self:attack()
     end
 
     if not self.hasDestination then
         -- Assumes the width of the map in tiles is 32 and the height is 25
-        print("Enemy is looking for a destination...")
         local pos = self:getPos()
 
         local currentTileX = math.floor(pos.x / 32) + 1
         local currentTileY = math.floor(pos.y / 32) + 1
 
-        print(string.format("currentTileX=%d, currentTileY=%d", currentTileX, currentTileY))
+        --print(string.format("currentTileX=%d, currentTileY=%d", currentTileX, currentTileY))
 
         -- Pick a random destination tile that isn't solid.
         local destinationTileX, destinationTileY
@@ -58,8 +57,8 @@ function Enemy:update(dt)
                 destinationFound = true
             end
         end
-        print("Destination found:")
-        print(string.format("destinationTileX=%d, destinationTileY=%d", destinationTileX, destinationTileY))
+        --print("Destination found:")
+        --print(string.format("destinationTileX=%d, destinationTileY=%d", destinationTileX, destinationTileY))
 
         local path, length = self.game.pathfinder:getPath(currentTileX, currentTileY, destinationTileX, destinationTileY)
 
@@ -73,7 +72,7 @@ function Enemy:update(dt)
     else
         if #self.pathPoints == 0 then
             self.hasDestination = false
-            print("Destination reached")
+            --print("Destination reached")
         else
             local nextPoint = self.pathPoints[1]
             if self:getPos():dist(nextPoint) < 8 then
@@ -114,4 +113,12 @@ function Enemy:attack()
 
     local beam = Beam.new(self.game, beamPos, theta, beamVel)
     self.game:addEntity(beam)
+end
+
+function Enemy:die()
+    print("Enemy was killed!")
+    if self.dead then return end -- fixes bug where multiple lasers hit an enemy during the same frame
+    self.game.playerScore = self.game.playerScore + 1
+    self.game.enemyCount = self.game.enemyCount - 1
+    self.dead = true
 end

@@ -2,7 +2,6 @@ local level = LevelManager.levelTemplate()
 
 function level.load()
   level.UI = UIManager.new()
-  level.UI:registerEvents()
 
   local windowWidth = love.window.getWidth()
   local windowHeight = love.window.getHeight()
@@ -49,6 +48,10 @@ end
 function level.draw()
   love.graphics.draw(level.backgroundImage, 0, 0)
   level.UI:draw()
+end
+
+function level.mousepressed(mx,my,button)
+    level.UI:mousepressed(mx,my,button)
 end
 
 return level
